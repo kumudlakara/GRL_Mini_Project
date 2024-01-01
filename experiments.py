@@ -168,7 +168,7 @@ def main(args, cluster=None):
 
     if args.prob_experiment:
         print('Dropout probability Experiment')
-        probs = [0.0, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 0.95]
+        probs = [0.0, 0.01, 0.02, 0.04, 0.08, 0.16]
         means = []
         stds = []
         for prob in probs:
@@ -191,14 +191,13 @@ def main(args, cluster=None):
         plt.tight_layout()
         plt.ylim(bottom=0.4)
         plt.vlines(p_opt, 0, 2, colors="k")
-        file_name = "experiment_p_{}.pdf".format(args.dataset)
+        file_name = "experiment_p_dropgnn_{}.pdf".format(args.dataset)
         plt.savefig(file_name)
     elif args.rrni_experiment:
-        random_vals = [0.0, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0]
+        random_vals = [0.0, 0.001, 0.005, 0.01, 0.05, 0.1]
         means = []
         stds = []
-        for i in range(5):
-            val = random.uniform(0,1)
+        for val in random_vals:
             print(f'Random value {val}:')
             model.random_value = val
             mean, std = train_and_test(model, num_runs, dataset, device, use_aux_loss, multiple_tests=True)
@@ -219,6 +218,33 @@ def main(args, cluster=None):
         plt.ylim(bottom=0.4)
         file_name = "experiment_rrni_{}.pdf".format(args.dataset)
         plt.savefig(file_name)
+    elif args.rni_experiment:
+        print('RNI Experiment')
+        probs = [0.0, 0.01, 0.02, 0.04, 0.08, 0.16]
+        means = []
+        stds = []
+        for prob in probs:
+            print(f'Randomization probability {prob}:')
+            p = prob
+            mean, std = train_and_test(model, num_runs, dataset, device, use_aux_loss, multiple_tests=True)
+            means.append(mean.item())
+            stds.append(std.item())
+        probs = np.array(probs)
+        means = np.array(means)
+        stds = np.array(stds)
+        lower = means - stds
+        lower = [i if i > 0 else 0 for i in lower]
+        upper = means + stds
+        upper = [i if i <= 1 else 1 for i in upper]
+        plt.plot(probs, means)
+        plt.fill_between(probs, lower, upper, alpha=0.3)
+        plt.xlabel("Dropout Probability")
+        plt.ylabel("Accuracy")
+        plt.tight_layout()
+        plt.ylim(bottom=0.4)
+        plt.vlines(p_opt, 0, 2, colors="k")
+        file_name = "experiment_p_rni_{}.pdf".format(args.dataset)
+        plt.savefig(file_name)
     else:
         train_and_test(model, num_runs, dataset, device, use_aux_loss,)    
 
@@ -234,7 +260,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--prob_experiment', action='store_true', default=False, help="Run probability experiments")
     parser.add_argument('--rrni_experiment', action='store_true', default=False, help="Run rRNI experiment with different random values")
-    
+    parser.add_argument('--rni_experiment', action='store_true', default=False, help="run rni experiment")
     parser.add_argument('--dataset', type=str, default='limitsone', help="Options are ['skipcircles', 'triangles', 'lcc', 'limitsone', 'limitstwo', 'fourcycles']")
     args = parser.parse_args()
 

@@ -15,7 +15,7 @@ class DropGIN(nn.Module):
             self.num_runs = num_runs
             self.p = p
             self.use_aux_loss = use_aux_loss
-            self.random_value = random.uniform(0, 0.5)
+            self.random_value = random.uniform(0, 0.2)
             self.augmentation = augmentation
             self.Conv = GINConv
 
