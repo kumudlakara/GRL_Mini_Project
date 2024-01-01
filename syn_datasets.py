@@ -1,3 +1,5 @@
+# This implementation is based on https://github.com/weihua916/powerful-gnns, https://github.com/chrsmrrs/k-gnn/tree/master/examples and https://github.com/KarolisMart/DropGNN
+#Datasets are implemented according to the respective papers.
 import numpy as np
 import networkx as nx
 import torch
