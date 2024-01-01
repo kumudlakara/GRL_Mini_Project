@@ -1,3 +1,4 @@
+# This implementation is based on https://github.com/weihua916/powerful-gnns, https://github.com/chrsmrrs/k-gnn/tree/master/examples and https://github.com/KarolisMart/DropGNN
 import torch
 from torch import nn
 import torch.nn.functional as F
